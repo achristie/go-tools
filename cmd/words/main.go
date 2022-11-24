@@ -1,8 +1,10 @@
 package main
 
-import "count"
+import (
+	"count"
+	"fmt"
+)
 
 func main() {
-	p := count.NewPrinter()
-	p.Print()
+	fmt.Println(count.Words())
 }

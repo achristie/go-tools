@@ -23,5 +23,3 @@ func NewPrinter() *Printer {
 func Print() {
 	NewPrinter().Print()
 }
-
-}

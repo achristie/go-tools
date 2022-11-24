@@ -1,4 +1,4 @@
-package hello
+package count
 
 import (
 	"fmt"
@@ -22,4 +22,6 @@ func NewPrinter() *Printer {
 
 func Print() {
 	NewPrinter().Print()
+}
+
 }

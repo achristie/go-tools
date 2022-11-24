@@ -1,8 +1,9 @@
-package hello
+package count
 
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 )
@@ -33,9 +34,23 @@ func NewCounter(opts ...option) (counter, error) {
 func WithInput(input io.Reader) option {
 	return func(c *counter) error {
 		if input == nil {
-			return errors.New("nil output reader")
+			return errors.New("nil input reader")
 		}
 		c.input = input
+		return nil
+	}
+}
+
+func WithInputFromArgs(args []string) option {
+	return func(c *counter) error {
+		if len(args) == 0 {
+			return nil
+		}
+		f, err := os.Open(args[0])
+		if err != nil {
+			return err
+		}
+		c.input = f
 		return nil
 	}
 }
@@ -60,9 +75,12 @@ func (c *counter) Lines() int {
 }
 
 func Lines() int {
-	c, err := NewCounter()
+	c, err := NewCounter(
+		WithInputFromArgs(os.Args[1:]),
+	)
 	if err != nil {
-		panic("internal error")
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 	return c.Lines()
 }

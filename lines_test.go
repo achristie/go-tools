@@ -1,8 +1,9 @@
-package hello_test
+package count_test
 
 import (
 	"bytes"
-	"hello"
+	"count"
+	"errors"
 	"testing"
 )
 
@@ -22,8 +23,8 @@ func TestLines(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c, err := hello.NewCounter(
-				hello.WithInput(bytes.NewBufferString(tt.input)),
+			c, err := count.NewCounter(
+				count.WithInput(bytes.NewBufferString(tt.input)),
 			)
 
 			if err != nil {
@@ -35,5 +36,42 @@ func TestLines(t *testing.T) {
 			}
 		})
 
+	}
+}
+
+func TestArgs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		args     []string
+		exp      int
+		expError error
+	}{
+		{name: "existing file", exp: 5, args: []string{"testdata/five.txt"}},
+		{name: "non-existing file", expError: errors.New("no such file"), args: []string{"testdata/doesnotexist.txt"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c, err := count.NewCounter(
+				count.WithInputFromArgs(tt.args),
+			)
+			if tt.expError != nil {
+				if err == nil {
+					t.Errorf("expected error but did not get one")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := c.Lines()
+
+			if got != tt.exp {
+				t.Errorf("got %d, want %d", got, tt.exp)
+			}
+		})
 	}
 }

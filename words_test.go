@@ -1,8 +1,8 @@
-package hello_test
+package count_test
 
 import (
 	"bytes"
-	"hello"
+	"count"
 	"testing"
 )
 
@@ -11,7 +11,7 @@ func Test_Hello(t *testing.T) {
 	want := "Helllllo!\n"
 
 	b := &bytes.Buffer{}
-	p := hello.Printer{
+	p := count.Printer{
 		Output: b,
 	}
 	p.Print()

@@ -12,6 +12,12 @@ import (
 
 const baseURL = "https://api.openweathermap.org"
 
+type Temperature float64
+
+func (t Temperature) Celsius() float64 {
+	return float64(t) - 273.15
+}
+
 type Client struct {
 	key        string
 	BaseURL    string
@@ -22,10 +28,14 @@ type OWMResponse struct {
 	Weather []struct {
 		Main string
 	}
+	Main struct {
+		Temp float64
+	}
 }
 
 type Conditions struct {
-	Summary string `json:"summary"`
+	Summary     string
+	Temperature Temperature
 }
 
 func NewClient(apikey string) *Client {
@@ -48,7 +58,10 @@ func ParseResponse(data []byte) (Conditions, error) {
 	if len(owm.Weather) < 1 {
 		return Conditions{}, fmt.Errorf("invalid response %s: no weather available", data)
 	}
-	return Conditions{Summary: owm.Weather[0].Main}, nil
+	return Conditions{
+		Summary:     owm.Weather[0].Main,
+		Temperature: Temperature(owm.Main.Temp),
+	}, nil
 }
 
 func (c *Client) FormatURL(location string) string {
@@ -121,5 +134,5 @@ func RunCLI() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(conditions)
+	fmt.Printf("%s %.1f\n", conditions.Summary, conditions.Temperature.Celsius())
 }

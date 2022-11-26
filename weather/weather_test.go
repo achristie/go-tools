@@ -90,3 +90,14 @@ func TestGetWeather(t *testing.T) {
 		t.Error(cmp.Diff(want, got))
 	}
 }
+
+func TestCelsius(t *testing.T) {
+	t.Parallel()
+	input := weather.Temperature(274.15)
+	want := 1.0
+	got := input.Celsius()
+
+	if !cmp.Equal(want, got) {
+		t.Error(cmp.Diff(want, got))
+	}
+}
